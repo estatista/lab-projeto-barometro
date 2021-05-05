@@ -11,7 +11,7 @@ library(purrr)
 library(tibble)
 library(stringr)
 library(forcats)
-
+library(plotly)
 #dados ajustado
 dta.sen <- read.csv(
   '/home/matheus/Documentos/UNB/Laboratório 1 - Shiny/Projeto/Scripts/Ajuste dos dados.csv',
@@ -126,7 +126,7 @@ ui <- dashboardPage(
                                       'Escolaridade','Região','Cor/Raça',
                                       'Religião/Crença','Renda em Salários Mínimos')),
               
-              fluidRow(column(width = 6,box(width = NULL,plotOutput('Graf1')))),
+              fluidRow(column(width = 6,box(width = NULL,plotlyOutput('Graf1')))),
               fluidRow(column(width = 6,box(width = NULL,tableOutput('Tabela1'))))
               
       ),
@@ -337,21 +337,45 @@ server <- function(input, output) {
   #Gráfico Tema 1 (Perfil dos Respondentes)
   output$Graf1 <- renderPlot({
     if(input$perfil1 == 'Sexo'){
-      pie(table(df.senado()$V05))
+      sexo <- dta.sen %>%
+        count(V05)
+      fig <- plot_ly(type = "pie", labels= sexo$V05, values = sexo$n)
+      fig
     }else if(input$perfil1 == 'Faixa Etária'){
-      barplot(table(df.senado()$V05))
+      fx.et <- dta.sen %>%
+        count(V06)
+      fig <- plot_ly(type = "pie", labels = fx.et$V06, values = fx.et$n)
+      fig
     } else if(input$perfil1 == 'Ocupação'){
-      barplot(table(df.senado()$V10_A))
+      ocp <- dta.sen %>%
+        count(V10_A)
+      fig <- plot_ly(type = "pie", labels = ocp$V10_A, values = ocp$n)
+      fig
     } else if(input$perfil1 == 'Escolaridade'){
-      barplot(table(df.senado()$V08))
+      esc <- dta.sen %>%
+        count(V08)
+      fig <- plot_ly(type = "pie", labels = esc$V08, values = esc$n)
+      fig
     } else if(input$perfil1 == 'Região'){
-      barplot(table(df.senado()$P01_A))
+      regiao <- dta.sen %>%
+        count(P01_A)
+      fig <- plot_ly(type = "pie", labels = regiao$P01_A, values = regiao$n)
+      fig
     } else if(input$perfil1 == 'Cor/Raça'){
-      barplot(table(df.senado()$V07))
+      cor.raca <- dta.sen %>%
+        count(V07)
+      fig <- plot_ly(type = "pie", labels = cor.raca$V07, values = cor.raca$n)
+      fig
     }else if(input$perfil1 == 'Religião/Crença'){
-      barplot(table(df.senado()$V11))
+      relig <- dta.sen %>%
+        count(V11)
+      fig <- plot_ly(type = "pie", labels = relig$V11, values = relig$n)
+      fig
     } else if (input$perfil1 =='Renda em Salários Mínimos'){
-      barplot(table(df.senado()$V12))
+      renda <- dta.sen %>%
+        count(V12)
+      fig <- plot_ly(type = "pie", labels = renda$V12, values = renda$n)
+      fig
     }
   })
   
