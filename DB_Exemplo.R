@@ -52,7 +52,7 @@ ui <- dashboardPage(
                             'Religião/Crença' = 'V11','Renda em Salários Mínimos'= 'V12')),
     
     conditionalPanel(condition= 'input.filtros1 != "Nenhum filtro selecionado"',
-                    selectInput('filtros2','Escolha um filtro',
+                    selectInput('filtros2','Escolha outro filtro',
                                 choices = c('Nenhum filtro selecionado','Sexo'='V05','Faixa Etária'='V06','Força de Trabalho'='V10','Ocupação' = 'V10_A',
                                             'Escolaridade'='V08','Região'='P01_A','Cor/Raça' = 'V07',
                                             'Religião/Crença' = 'V11','Renda em Salários Mínimos'= 'V12'))),
@@ -164,7 +164,7 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf1
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf1 <- dta.sen %>% 
         ggplot(aes_string(x = input$pergunta1)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
@@ -177,7 +177,21 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf1
-    }
+    }  else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf1 <- dta.sen %>% 
+        ggplot(aes_string(x = input$pergunta1)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        facet_wrap(~get(input$filtros2))
+        labs(x=" ", y="Frequência",fill=" ") +
+        theme_bw() +
+        theme(axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf1
+    } 
   })
   
   output$Graf1 <- renderPlotly({
