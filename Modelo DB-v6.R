@@ -14,7 +14,6 @@ dta.sen <- read.csv(
 #############
 # DASHBOARD #
 #############
-
 ui <- dashboardPage(
   dashboardHeader(title = "DataSenado"),
   
@@ -86,13 +85,13 @@ ui <- dashboardPage(
       ),
       tabItem(tabName="op-3",selectInput("pergunta3","Escolha uma pergunta:",choices=c("Na eleição para prefeito, o que foi mais importante para a decisão do seu voto?"=  "P15",
                                                                   "E na eleição para vereador, o que foi mais importante para a decisão do seu voto?"='P15_A')),
-              fluidRow(box(plotOutput("Graf3"),width=9)),
+              fluidRow(box(plotlyOutput("Graf3"),width=9)),
               fluidRow(box(tableOutput("Tabela3")))
       ),
       tabItem(tabName="op-4a",selectInput("pergunta4A","Escolha uma pergunta:",choices=c("As pessoas procuram ajuda financeira do governo porque não querem trabalhar" ="P18_5",
                                                                     'O quanto você sabe sobre o auxílio emergencial aprovado pelo Congresso Nacional para trabalhadores informais, autônomos e desempregados?' ='P19',
                                                                     'Na sua opinião, programas de auxílio financeiro do governo para pessoas de baixa renda devem existir' = 'P20')),
-              fluidRow(box(plotOutput("Graf4A"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4A"),width=9)),
               fluidRow(box(tableOutput("Tabela4A")))
       ),
       tabItem(tabName="op-4b",selectInput("pergunta4B","Escolha uma pergunta:",choices=c("Lembra em quem votou para senador na última eleição?" = "P07_1",
@@ -101,7 +100,7 @@ ui <- dashboardPage(
                                                                                          "Em algumas situações, o voto de pessoas como você deveria valer mais do que o voto de outras pessoas."  ='P16_1',
                                                                                          "Algumas pessoas só votam em determinados partidos porque têm menos estudo." = 'P16_2',
                                                                                          "Você confia no resultado das urnas eletrônicas em eleições."  = 'P16_4')),
-              fluidRow(box(plotOutput("Graf4B"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4B"),width=9)),
               fluidRow(box(tableOutput("Tabela4B")))
       ),
       tabItem(tabName="op-4c",selectInput("pergunta4C","Escolha uma pergunta:",choices=c("Na política se fala em esquerda, direita e centro. Você se considera mais de:" = 'P21',
@@ -109,35 +108,35 @@ ui <- dashboardPage(
                                                                                          "Qual a principal forma de comunicação que você utiliza para se informar sobre o política?"  = 'P05',
                                                                                          "Com que frequência você acompanha notícias sobre o que está sendo debatido no Senado:" = 'P06',
                                                                                          "Na hora de fazer leis, os políticos devem levar em conta o que diz a tradição das religiões"  = 'P18_6')),
-              fluidRow(box(plotOutput("Graf4C"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4C"),width=9)),
               fluidRow(box(tableOutput("Tabela4C")))
       ),
       tabItem(tabName="op-4d",selectInput("pergunta4D","Escolha uma pergunta:",choices=c("Antes de ser punido, um criminoso deve ter o direito de se defender na justiça." = "P16_3",
                                                                                          "Deveria existir pena de morte no Brasil."='P18_1',
                                                                                          "Facilitar a posse de armas vai aumentar a segurança no Brasil."='P18_2')),
-              fluidRow(box(plotOutput("Graf4D"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4D"),width=9)),
               fluidRow(box(tableOutput("Tabela4D")))
       ),
       tabItem(tabName="op-4e",selectInput("pergunta4E","Escolha uma pergunta:",choices=c("No Brasil, homossexuais sofrem muita discriminação."="P17_2")),
-              fluidRow(box(plotOutput("Graf4E"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4E"),width=9)),
               fluidRow(box(tableOutput("Tabela4E")))
       ),
       tabItem(tabName="op-4f",selectInput("pergunta4F","Escolha uma pergunta:",choices=c("O sistema de cotas para negros em universidades é justo."="P17_1")),
-              fluidRow(box(plotOutput("Graf4F"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4F"),width=9)),
               fluidRow(box(tableOutput("Tabela4F")))
       ),
       tabItem(tabName="op-4g",selectInput("pergunta4G","Escolha uma pergunta:",choices=c("As mulheres devem ter o direito de interromper a gravidez com segurança, caso elas queiram"="P17_3")),
-              fluidRow(box(plotOutput("Graf4G"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4G"),width=9)),
               fluidRow(box(tableOutput("Tabela4G")))
       ),
       tabItem(tabName="op-4h",selectInput("pergunta4H","Escolha uma pergunta:",choices=c("De forma geral, a natureza e o meio-ambiente são bem protegidos no Brasil"="P17_4",
                                                                                          "O aquecimento global é um problema preocupante"='P17_5')),
-              fluidRow(box(plotOutput("Graf4H"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4H"),width=9)),
               fluidRow(box(tableOutput("Tabela4H")))
       ),
       tabItem(tabName="op-4i",selectInput("pergunta4I","Escolha uma pergunta:",choices=c("A maconha para uso medicinal deve ser legalizada"="P18_3",
                                                                                          "A maconha para uso recreativo deve ser legalizada "='P18_4')),
-              fluidRow(box(plotOutput("Graf4I"),width=9)),
+              fluidRow(box(plotlyOutput("Graf4I"),width=9)),
               fluidRow(box(tableOutput("Tabela4I")))
       )   
   )  
@@ -269,10 +268,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf3
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf3 <- ggplot(dta.sen, aes_string(x = input$pergunta3)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -281,12 +280,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf3
-    }
+    }  else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf3 <- ggplot(dta.sen, aes_string(x = input$pergunta3)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf3
+    } 
     
   })
   
-  output$Graf3 <- renderPlot({
-    f_graf3()
+  output$Graf3 <- renderPlotly({
+    ggplotly(f_graf3())
   })
   
   # Gráficos Tema 4 (Perfil Psicométrico)
@@ -306,10 +319,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4A
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4A <- ggplot(dta.sen, aes_string(x = input$pergunta4A)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -318,12 +331,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4A
-    }
+    }  else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4A <- ggplot(dta.sen, aes_string(x = input$pergunta4A)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4A
+    } 
     
   })
   
-  output$Graf4A <- renderPlot({
-    f_graf4A()
+  output$Graf4A <- renderPlotly({
+    ggplotly(f_graf4A())
   })
   
   # 4B
@@ -342,10 +369,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4B
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4B <- ggplot(dta.sen, aes_string(x = input$pergunta4B)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -354,12 +381,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4B
-    }
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4B <- ggplot(dta.sen, aes_string(x = input$pergunta4B)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4B
+    } 
     
   })
   
-  output$Graf4B <- renderPlot({
-    f_graf4B()
+  output$Graf4B <- renderPlotly({
+    ggplotly(f_graf4B())
   })
   
   
@@ -378,10 +419,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4C
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4C <- ggplot(dta.sen, aes_string(x = input$pergunta4C)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -390,12 +431,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4C
-    }
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4C <- ggplot(dta.sen, aes_string(x = input$pergunta4C)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4C
+    } 
     
   })
   
-  output$Graf4C <- renderPlot({
-    f_graf4C()
+  output$Graf4C <- renderPlotly({
+    ggplotly(f_graf4C())
   })
   
   
@@ -415,10 +470,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4D
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4D <- ggplot(dta.sen, aes_string(x = input$pergunta4D)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -427,12 +482,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4D
-    }
+    }  else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4D <- ggplot(dta.sen, aes_string(x = input$pergunta4D)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4D
+    } 
     
   })
   
-  output$Graf4D <- renderPlot({
-    f_graf4D()
+  output$Graf4D <- renderPlotly({
+    ggplotly(f_graf4D())
   })
   
   # 4E
@@ -450,10 +519,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4E
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4E <- ggplot(dta.sen, aes_string(x = input$pergunta4E)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -462,12 +531,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4E
-    }
+    }  else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4E <- ggplot(dta.sen, aes_string(x = input$pergunta4E)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4E
+    } 
     
   })
   
-  output$Graf4E <- renderPlot({
-    f_graf4E()
+  output$Graf4E <- renderPlotly({
+    ggplotly(f_graf4E())
   })
   
   
@@ -487,10 +570,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4F
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4F <- ggplot(dta.sen, aes_string(x = input$pergunta4F)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -499,12 +582,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4F
-    }
+    }  else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4F <- ggplot(dta.sen, aes_string(x = input$pergunta4F)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4F
+    } 
     
   })
   
-  output$Graf4F <- renderPlot({
-    f_graf4F()
+  output$Graf4F <- renderPlotly({
+    ggplotly(f_graf4F())
   })
   
   
@@ -524,10 +621,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4G
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4G <- ggplot(dta.sen, aes_string(x = input$pergunta4G)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -536,12 +633,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4G
-    }
+    }  else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4G <- ggplot(dta.sen, aes_string(x = input$pergunta4G)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4G
+    } 
     
   })
   
-  output$Graf4G <- renderPlot({
-    f_graf4G()
+  output$Graf4G <- renderPlotly({
+    ggplotly(f_graf4G())
   })
   
   
@@ -561,10 +672,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4H
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4H <- ggplot(dta.sen, aes_string(x = input$pergunta4H)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -573,12 +684,26 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4H
-    }
+    }else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4H <- ggplot(dta.sen, aes_string(x = input$pergunta4H)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4H
+    } 
     
   })
   
-  output$Graf4H <- renderPlot({
-    f_graf4H()
+  output$Graf4H <- renderPlotly({
+    ggplotly(f_graf4H())
   })
   
   # 4I
@@ -597,10 +722,10 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4I
-    } else if(input$filtros1 != 'Nenhum filtro selecionado'){
+    } else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 == 'Nenhum filtro selecionado'){
       f_graf4I <- ggplot(dta.sen, aes_string(x = input$pergunta4I)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
-        labs(x=" ", y="Frequência") +
+        labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
               axis.title.x = element_text(colour="black", size=12),
@@ -609,16 +734,29 @@ server <- function(input, output) {
               axis.line = element_line(colour = "black")) +
         coord_flip()
       f_graf4I
-    }
+    }else if(input$filtros1 != 'Nenhum filtro selecionado' & input$filtros2 != 'Nenhum filtro selecionado'){
+      f_graf4I <- ggplot(dta.sen, aes_string(x = input$pergunta4I)) + 
+        geom_bar(aes_string(fill=input$filtros1)) +
+        labs(x=" ", y="Frequência",fill=" ") +
+        facet_wrap(~get(input$filtros2))+
+        theme_bw() +
+        theme(panel.spacing = unit(2,"lines"),
+              axis.title.y=element_text(colour="black", size=12),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text = element_text(colour = "black", size=9.5),
+              panel.border = element_blank(),
+              axis.line = element_line(colour = "black")) +
+        coord_flip()
+      f_graf4I
+    } 
     
   })
   
-  output$Graf4I <- renderPlot({
-    f_graf4I()
+  output$Graf4I <- renderPlotly({
+    ggplotly(f_graf4I())
   })
   
 }
 
 shinyApp(ui, server)
-
 
