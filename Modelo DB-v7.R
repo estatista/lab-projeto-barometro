@@ -4,7 +4,11 @@ library(shinyWidgets)
 library(tidyverse)
 library(expss)
 library(plotly)
-
+library(survey)
+library(dplyr)
+library(purrr)
+library(DT)
+library(RColorBrewer)
 
 dta.sen <- read.csv(
   'Dados_Ajustados.csv',
@@ -74,7 +78,7 @@ ui <- dashboardPage(
                                                                   'Religião/Crença' = 'V11','Renda em Salários Mínimos'= 'V12'
                                                                   )),
               fluidRow(box(plotlyOutput("Graf1"),width=9)),
-              fluidRow(box(tableOutput("Tabela1")))
+              fluidRow(box(dataTableOutput("Tabela1")))
       ),
       tabItem(tabName="op-2",selectInput("pergunta2","Escolha uma pergunta:",choices=c("Avaliação do trabalho do Senado para atender as necessidades da população" =  "P08"
                                                                   , 'Importância do Senado Federal e da Câmara dos Deputados para a democracia' = 'P09',
@@ -173,6 +177,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta1)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -190,6 +195,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>% 
         ggplot(aes_string(x = input$pergunta1)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         facet_wrap(~get(input$filtros2))+
         coord_flip()+
         labs(x=" ", y="Frequência",fill=" ") +
@@ -210,7 +216,23 @@ server <- function(input, output) {
   
   
   f_tabela1 <- reactive({
-    
+    if(input$filtros1 == 'Nenhum filtro selecionado'){
+      pr = svymean(~as.factor(dta.sen[[input$pergunta1]]),data.rake,na.rm = T)
+      tot = svytotal(~as.factor(dta.sen[[input$pergunta1]]),data.rake,na.rm = T)
+      tab <- dta.sen%>%
+        summarise(total = round(coef(tot),0),
+                  prop = round(coef(pr),3)*100,margem = round((2*SE(pr))*100,4))%>%
+        add_row(total = round(sum(coef(tot)),0),
+                prop = sum(coef(pr))*100,margem = NULL)
+      
+      rownames(tab) <- c(levels(dta.sen[[input$pergunta1]]),'Total')
+      colnames(tab) <- c('População Estimada','Percentual (%)','Margem de Erro (%)')
+      tab
+    }
+  })
+  
+  output$Tabela1 <- renderDataTable({
+    f_tabela1()
   })
   
   #Gráfico Tema 2 (Democracia e Avaliação do Congresso)
@@ -238,6 +260,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta2)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -255,6 +278,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta2)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -300,6 +324,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta3)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -317,6 +342,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta3)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -363,6 +389,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta4A)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -380,6 +407,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4A)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -425,6 +453,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot( aes_string(x = input$pergunta4B)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -442,6 +471,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4B)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -487,6 +517,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta4C)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -504,6 +535,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4C)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -550,6 +582,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta4D)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -567,6 +600,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4D)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -611,6 +645,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta4E)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -628,6 +663,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4E)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -674,6 +710,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta4F)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -691,6 +728,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4F)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -737,6 +775,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot(aes_string(x = input$pergunta4G)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -754,6 +793,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4G)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -800,6 +840,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot( aes_string(x = input$pergunta4H)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -817,6 +858,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4H)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -862,6 +904,7 @@ server <- function(input, output) {
         drop_na(input$filtros1) %>% 
         ggplot( aes_string(x = input$pergunta4I)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         theme_bw() +
         theme(axis.title.y=element_text(colour="black", size=12),
@@ -879,6 +922,7 @@ server <- function(input, output) {
         drop_na(input$filtros2) %>%  
         ggplot(aes_string(x = input$pergunta4I)) + 
         geom_bar(aes_string(fill=input$filtros1)) +
+        scale_fill_brewer(palette="Reds")+
         labs(x=" ", y="Frequência",fill=" ") +
         facet_wrap(~get(input$filtros2))+
         theme_bw() +
@@ -901,5 +945,8 @@ server <- function(input, output) {
 }
 
 shinyApp(ui, server)
+
+
+
 
 
